@@ -81,6 +81,7 @@ ADD scidb_docker.ini		/home/scidb/scidb_docker.ini
 #ADD downloaddata.sh 		/home/scidb/downloaddata.sh
 ADD createArray.afl 		/home/scidb/createArray.afl
 ADD removeArrayVersions.sh 	/home/scidb/removeArrayVersions.sh
+ADD temporal-patterns.tar.gz	/home/scidb/temporal-patterns.tar.gz
 
 
 RUN chown -R root:root /root/*
