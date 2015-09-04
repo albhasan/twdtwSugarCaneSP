@@ -4,6 +4,7 @@ echo "INSTALL GDAL 1.11.2 WITH SCIDB SUPPORT"
 #######################################################################
 sudo apt-get remove libhdf4-dev
 sudo apt-get install libhdf4-alt-dev
+sudo apt-get install libproj-dev
 
 mkdir installGdal
 cd installGdal

@@ -66,9 +66,10 @@ yes | /root/./installBoost_1570.sh
 yes | /root/./installGdal_1112.sh
 yes | /root/./installGribModis2SciDB.sh
 ldconfig
-wget -P /opt/scidb/14.8/lib/scidb/plugins https://dl.dropboxusercontent.com/u/25989010/scidbResources/libr_exec.so
+wget -P /opt/scidb/14.12/lib/scidb/plugins https://dl.dropboxusercontent.com/u/25989010/scidbResources/libr_exec.so
 # Install Victor Maus's R package from source
-git clone https://github.com/vwmaus/dtwSat.git
+#git clone https://github.com/vwmaus/dtwSat.git
+wget https://github.com/vwmaus/dtwSat/archive/master.zip
 tar czf dtwSat.tar.gz ./dtwSat/*.*
 R CMD INSTALL dtwSat.tar.gz
 #********************************************************
