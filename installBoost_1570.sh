@@ -7,7 +7,6 @@ tar xzf boost_1_57_0.tar.gz
 cd boost_1_57_0/
 n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
 ./bootstrap.sh --prefix=/usr/local
-#sudo ./b2  -j 4 --prefix=/usr/local install
 sudo ./b2  -j $n --prefix=/usr/local install
 #sudo ./b2 --with=all -j 4 cxxflags="-std=c++11" --target=shared,static install 
 sudo ldconfig

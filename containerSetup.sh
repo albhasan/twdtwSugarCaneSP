@@ -47,30 +47,49 @@ yes | ssh-copy-id -i ~/.ssh/id_rsa.pub  "scidb@0.0.0.0"
 yes | ssh-copy-id -i ~/.ssh/id_rsa.pub  "scidb@127.0.0.1"
 EOF
 #********************************************************
+echo "***** ***** Environment variables for user root..."
+#********************************************************
+~/./setEnvironment.sh
+source ~/.bashrc
+#********************************************************
 echo "***** Installing SciDB..."
 #********************************************************
 cd ~
-wget https://www.dropbox.com/s/vrry4eggjcs0ky8/deployment-14.12.tar
-tar xf deployment-14.12.tar
-cd /root/deployment/cluster_install
-yes | ./cluster_install -s /home/scidb/scidb_docker.ini
+wget -O- https://downloads.paradigm4.com/key | sudo apt-key add -
+cat  /etc/apt/sources.list.d/scidb.list
+echo "deb https://downloads.paradigm4.com/ ubuntu12.04/14.12/" >> /etc/apt/sources.list.d/scidb.list
+echo "deb-src https://downloads.paradigm4.com/ ubuntu12.04/14.12/">> /etc/apt/sources.list.d/scidb.list
+apt-get update
+apt-cache search scidb
+yes | apt-get install scidb-14.12-all-coord # On the coordinator server only
+#yes | apt-get install scidb-14.12-all # On all servers other than the coordinator server
+#apt-get source scidb # If you want the SciDB source
+#echo "host	all		all		W.X.Y.Z/N		md5" >> /etc/postgresql/8.4/main/pg_hba.conf #
+#/etc/postgresql/8.4/main/postgresql.conf # listen_addresses = '*' \n port = 5432
+#/etc/init.d/postgresql restart
+#/sbin/chkconfig --add postgresql # To run pópastgres as a service
+#/sbin/chkconfig postgresql on # To run pópastgres as a service
+/etc/init.d/postgresql status
+# configuration file
+cp /home/scidb/scidb_docker.ini /opt/scidb/$SCIDB_VER/etc/config.ini
+# Setup database catalog
+cd /tmp && sudo -u postgres /opt/scidb/$SCIDB_VER/bin/scidb.py init_syscat sdb_doc_twdtw
 #********************************************************
 echo "***** Installing additional stuff..."
 #********************************************************
 cd ~
-# TODO: Update R, maybe??????
 yes | /root/./installR.sh
-Rscript /home/scidb/installPackages.R packages=scidb,devtools,Rserve verbose=0 quiet=0
+Rscript /home/scidb/installPackages.R packages=scidb,devtools,Rserve,dtw,sp,raster,waveslim,rgdal verbose=0 quiet=0
 yes | /root/./installParallel.sh
 yes | /root/./installBoost_1570.sh
 yes | /root/./installGdal_1112.sh
 yes | /root/./installGribModis2SciDB.sh
 ldconfig
-wget -P /opt/scidb/14.12/lib/scidb/plugins https://dl.dropboxusercontent.com/u/25989010/scidbResources/libr_exec.so
+cp /root/libr_exec.so /opt/scidb/$SCIDB_VER/lib/scidb/plugins/
 # Install Victor Maus's R package from source
 git clone https://github.com/vwmaus/dtwSat.git
-tar czf dtwSat.tar.gz ./dtwSat/*.*
-R CMD INSTALL dtwSat.tar.gz
+Rscript /home/scidb/installPackages.R packages=rgdal verbose=0 quiet=0
+R CMD INSTALL dtwSat
 #********************************************************
 echo "***** Installing SHIM..."
 #********************************************************
@@ -86,10 +105,15 @@ rm ubuntu_12.04_shim_14.12_amd64.deb
 #sudo su scidb
 su scidb <<'EOF'
 cd ~
+#********************************************************
+echo "***** ***** Environment variables for user scidb..."
+#********************************************************
+/home/scidb/./setEnvironment.sh
 source ~/.bashrc
 #********************************************************
 echo "***** ***** Starting SciDB..."
 #********************************************************
+cd ~
 /home/scidb/./startScidb.sh
 sed -i -e 's/yes/#yes/g' /home/scidb/startScidb.sh
 #********************************************************
@@ -117,11 +141,9 @@ echo "***** ***** Loading data to arrays..."
 python /home/scidb/modis2scidb/checkFolder.py --log DEBUG /home/scidb/data/toLoad/ /home/scidb/modis2scidb/ MOD13Q1 MOD13Q1 &
 #ONLY SAO PAULO state data h13v11
 #find /home/scidb/modis/MOD13Q1 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-find /home/scidb/modis/MOD13Q1/2010 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-find /home/scidb/modis/MOD13Q1/2011 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-find /home/scidb/modis/MOD13Q1/2012 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-find /home/scidb/modis/MOD13Q1/2013 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-find /home/scidb/modis/MOD13Q1/2014 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
+
+find e4ftl01.cr.usgs.gov/MOLT/MOD13Q1.005 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
+
 #********************************************************
 echo "***** ***** Waiting to finish uploading files to SciDB..."
 #********************************************************
@@ -140,11 +162,6 @@ echo "***** ***** Executing TW-DTW..."
 #********************************************************
 #extract patterns - where?????????
 tar -xzf temporal-patterns.tar.gz
-
-
-
-
-
 
 
 rm /home/scidb/pass.txt

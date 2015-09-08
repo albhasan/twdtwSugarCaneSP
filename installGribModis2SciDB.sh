@@ -17,7 +17,8 @@ git clone https://github.com/gqueiroz/modis2scidb.git
 cd build-linux
 
 cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE:STRING="Release" -DCMAKE_CXX_FLAGS:STRING="-lpthread -std=c++0x" ../modis2scidb/build/cmake
-make -j 4
+n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
+make -j $n
 sudo make install
 sudo ldconfig
 

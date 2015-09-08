@@ -21,7 +21,8 @@ cp ./scidb4gdal/src/*.* ./gdal-1.11.2/frmts/scidb/
 echo "Compiling gdal..."
 cd gdal-1.11.2
 ./configure
-make -j 4
+n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
+make -j $n
 sudo make install
 
 echo "Finished!"

@@ -12,7 +12,7 @@
 #ssh 			22
 #shim			8083s
 #Postgresql 		5432
-#SciDB			1239		
+#SciDB			1239
 
 
 FROM ubuntu:12.04
@@ -25,15 +25,18 @@ RUN apt-get -qq update && apt-get install --fix-missing -y --force-yes --allow-u
 	openssh-server \
 	sudo \
 	wget \
+	curl \
+	libcurl4-openssl-dev \
+	libxml2-dev  \
 	gdebi \
-	nano \  
-	postgresql-8.4 \ 
-	sshpass \ 
-	git-core \ 
-	apt-transport-https \ 
-	net-tools \ 
+	nano \
+	postgresql-8.4 \
+	sshpass \
+	git-core \
+	apt-transport-https \
+	net-tools \
 	imagemagick
-
+	#libssl-dev \
 
 
 # Set environment
@@ -46,10 +49,10 @@ RUN env
 
 # Configure users
 RUN useradd --home /home/scidb --create-home --uid 1005 --group sudo --shell /bin/bash scidb
-RUN echo 'root:bigdatalab360' | chpasswd
-RUN echo 'postgres:bigdatalab360' | chpasswd
-RUN echo 'scidb:bigdatalab360' | chpasswd
-RUN echo 'bigdatalab360'  >> /home/scidb/pass.txt
+RUN echo 'root:xxxx.xxxx.xxxx' | chpasswd
+RUN echo 'postgres:xxxx.xxxx.xxxx' | chpasswd
+RUN echo 'scidb:xxxx.xxxx.xxxx' | chpasswd
+RUN echo 'xxxx.xxxx.xxxx'  >> /home/scidb/pass.txt
 
 
 RUN mkdir /var/run/sshd
@@ -60,7 +63,7 @@ RUN mkdir /home/scidb/data
 RUN echo 'StrictHostKeyChecking no' >> /etc/ssh/ssh_config
 
 
-# Configure Postgres 
+# Configure Postgres
 RUN echo 'host  all all 255.255.0.0/16   md5' >> /etc/postgresql/8.4/main/pg_hba.conf
 
 
@@ -73,14 +76,16 @@ ADD installBoost_1570.sh	/root/installBoost_1570.sh
 ADD installGribModis2SciDB.sh	/root/installGribModis2SciDB.sh
 ADD installGdal_1112.sh		/root/installGdal_1112.sh
 ADD libr_exec.so 		/root/libr_exec.so
+ADD setEnvironment.sh 		/root/setEnvironment.sh
 ADD iquery.conf 		/home/scidb/.config/scidb/iquery.conf
 ADD installPackages.R		/home/scidb/installPackages.R
 ADD startScidb.sh		/home/scidb/startScidb.sh
 ADD stopScidb.sh		/home/scidb/stopScidb.sh
 ADD scidb_docker.ini		/home/scidb/scidb_docker.ini
-#ADD downloaddata.sh 		/home/scidb/downloaddata.sh
+ADD downloaddata.sh 		/home/scidb/downloaddata.sh
 ADD createArray.afl 		/home/scidb/createArray.afl
 ADD removeArrayVersions.sh 	/home/scidb/removeArrayVersions.sh
+ADD setEnvironment.sh 		/home/scidb/setEnvironment.sh
 ADD temporal-patterns.tar.gz	/home/scidb/temporal-patterns.tar.gz
 
 
@@ -90,9 +95,9 @@ RUN chown -R root:root /root/*
 RUN chown -R scidb:scidb /home/scidb/*
 
 
-RUN chmod +x \ 
-	/root/*.sh \ 
-	/home/scidb/*.sh 
+RUN chmod +x \
+	/root/*.sh \
+	/home/scidb/*.sh
 
 
 # Restarting services
@@ -100,7 +105,7 @@ RUN stop ssh
 RUN start ssh
 RUN /etc/init.d/postgresql restart
 
-	
+
 EXPOSE 22
 EXPOSE 8083
 
