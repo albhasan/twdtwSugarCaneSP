@@ -115,7 +115,8 @@ echo "***** ***** Starting SciDB..."
 #********************************************************
 cd ~
 /home/scidb/./startScidb.sh
-sed -i -e 's/yes/#yes/g' /home/scidb/startScidb.shlibrary(dtwSat)
+sed -i -e 's/yes/#yes/g' /home/scidb/startScidb.sh
+library(dtwSat)
 library(scidb)
 library(scales)
 
