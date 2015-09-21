@@ -24,5 +24,6 @@ cd gdal-1.11.2
 n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
 make -j $n
 sudo make install
+sudo ldconfig
 
 echo "Finished!"

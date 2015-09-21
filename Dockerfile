@@ -68,25 +68,28 @@ RUN echo 'host  all all 255.255.0.0/16   md5' >> /etc/postgresql/8.4/main/pg_hba
 
 
 # Add files
-ADD containerSetup.sh 		/root/containerSetup.sh
-ADD conf 			/root/conf
-ADD installR.sh			/root/installR.sh
-ADD installParallel.sh		/root/installParallel.sh
-ADD installBoost_1570.sh	/root/installBoost_1570.sh
+ADD containerSetup.sh 				/root/containerSetup.sh
+ADD conf 											/root/conf
+ADD installR.sh								/root/installR.sh
+ADD installParallel.sh				/root/installParallel.sh
+ADD installBoost_1570.sh			/root/installBoost_1570.sh
 ADD installGribModis2SciDB.sh	/root/installGribModis2SciDB.sh
-ADD installGdal_1112.sh		/root/installGdal_1112.sh
-ADD libr_exec.so 		/root/libr_exec.so
-ADD setEnvironment.sh 		/root/setEnvironment.sh
-ADD iquery.conf 		/home/scidb/.config/scidb/iquery.conf
-ADD installPackages.R		/home/scidb/installPackages.R
-ADD startScidb.sh		/home/scidb/startScidb.sh
-ADD stopScidb.sh		/home/scidb/stopScidb.sh
-ADD scidb_docker.ini		/home/scidb/scidb_docker.ini
-ADD downloaddata.sh 		/home/scidb/downloaddata.sh
-ADD createArray.afl 		/home/scidb/createArray.afl
-ADD removeArrayVersions.sh 	/home/scidb/removeArrayVersions.sh
-ADD setEnvironment.sh 		/home/scidb/setEnvironment.sh
+ADD installGdal_1112.sh				/root/installGdal_1112.sh
+ADD libr_exec.so 							/root/libr_exec.so
+ADD setEnvironment.sh 				/root/setEnvironment.sh
+ADD iquery.conf 							/home/scidb/.config/scidb/iquery.conf
+ADD installPackages.R					/home/scidb/installPackages.R
+ADD startScidb.sh							/home/scidb/startScidb.sh
+ADD stopScidb.sh							/home/scidb/stopScidb.sh
+ADD scidb_docker.ini					/home/scidb/scidb_docker.ini
+ADD downloaddata.sh 					/home/scidb/downloaddata.sh
+ADD createArray.afl 					/home/scidb/createArray.afl
+ADD removeArrayVersions.sh 		/home/scidb/removeArrayVersions.sh
+ADD setEnvironment.sh 				/home/scidb/setEnvironment.sh
 ADD temporal-patterns.tar.gz	/home/scidb/temporal-patterns.tar.gz
+ADD config.R									/home/scidb/config.R
+ADD proc.R										/home/scidb/proc.R
+ADD EMBRAPA.R									/home/scidb/EMBRAPA.R
 
 
 RUN chown -R root:root /root/*

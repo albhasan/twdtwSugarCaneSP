@@ -3,7 +3,6 @@
 #echo "SET SCIDB ENVIRONMENTAL VARIABLES TO bashrc"
 #echo "##################################################"
 echo "#***** ***** SCIDB" >> ~/.bashrc
-echo "SCIDB_VER=14.12" >> ~/.bashrc
-echo "PATH=$PATH:/opt/scidb/$SCIDB_VER/bin:/opt/scidb/$SCIDB_VER/share/scidb" >> ~/.bashrc
-echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/scidb/$SCIDB_VER/lib" >> ~/.bashrc
-
+echo "export SCIDB_VER=14.12" >> ~/.bashrc
+echo "export PATH=$PATH:/opt/scidb/14.12/bin:/opt/scidb/14.12/share/scidb" >> ~/.bashrc
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/scidb/14.12/lib" >> ~/.bashrc

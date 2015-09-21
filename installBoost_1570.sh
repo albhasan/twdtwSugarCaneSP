@@ -1,4 +1,7 @@
 #!/bin/bash
+#######################################################################
+echo "INSTALL BOOST LIBRARIES"
+#######################################################################
 #sudo apt-get install build-essential g++ python-dev autotools-dev gfortran libicu-dev build-essential libbz2-dev libzip-dev
 mkdir installBoost
 cd installBoost
@@ -8,6 +11,5 @@ cd boost_1_57_0/
 n=`cat /proc/cpuinfo | grep "cpu cores" | uniq | awk '{print $NF}'`
 ./bootstrap.sh --prefix=/usr/local
 sudo ./b2  -j $n --prefix=/usr/local install
-#sudo ./b2 --with=all -j 4 cxxflags="-std=c++11" --target=shared,static install 
+#sudo ./b2 --with=all -j 4 cxxflags="-std=c++11" --target=shared,static install
 sudo ldconfig
-

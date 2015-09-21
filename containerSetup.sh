@@ -66,26 +66,26 @@ yes | apt-get install scidb-14.12-all-coord # On the coordinator server only
 #apt-get source scidb # If you want the SciDB source
 #echo "host	all		all		W.X.Y.Z/N		md5" >> /etc/postgresql/8.4/main/pg_hba.conf #
 #/etc/postgresql/8.4/main/postgresql.conf # listen_addresses = '*' \n port = 5432
-#/etc/init.d/postgresql restart
+/etc/init.d/postgresql restart
 #/sbin/chkconfig --add postgresql # To run pópastgres as a service
 #/sbin/chkconfig postgresql on # To run pópastgres as a service
 /etc/init.d/postgresql status
 # configuration file
-cp /home/scidb/scidb_docker.ini /opt/scidb/$SCIDB_VER/etc/config.ini
+cp /home/scidb/scidb_docker.ini /opt/scidb/14.12/etc/config.ini
 # Setup database catalog
-cd /tmp && sudo -u postgres /opt/scidb/$SCIDB_VER/bin/scidb.py init_syscat sdb_doc_twdtw
+cd /tmp && sudo -u postgres /opt/scidb/14.12/bin/scidb.py init_syscat sdb_doc_twdtw
 #********************************************************
 echo "***** Installing additional stuff..."
 #********************************************************
 cd ~
 yes | /root/./installR.sh
-Rscript /home/scidb/installPackages.R packages=scidb,devtools,Rserve,dtw,sp,raster,waveslim,rgdal verbose=0 quiet=0
+Rscript /home/scidb/installPackages.R packages=scidb,devtools,Rserve,dtw,sp,raster,waveslim,rgdal,scales verbose=0 quiet=0
 yes | /root/./installParallel.sh
 yes | /root/./installBoost_1570.sh
 yes | /root/./installGdal_1112.sh
 yes | /root/./installGribModis2SciDB.sh
 ldconfig
-cp /root/libr_exec.so /opt/scidb/$SCIDB_VER/lib/scidb/plugins/
+cp /root/libr_exec.so /opt/scidb/14.12/lib/scidb/plugins/
 # Install Victor Maus's R package from source
 git clone https://github.com/vwmaus/dtwSat.git
 Rscript /home/scidb/installPackages.R packages=rgdal verbose=0 quiet=0
@@ -115,7 +115,10 @@ echo "***** ***** Starting SciDB..."
 #********************************************************
 cd ~
 /home/scidb/./startScidb.sh
-sed -i -e 's/yes/#yes/g' /home/scidb/startScidb.sh
+sed -i -e 's/yes/#yes/g' /home/scidb/startScidb.shlibrary(dtwSat)
+library(scidb)
+library(scales)
+
 #********************************************************
 echo "***** ***** Testing installation using IQuery..."
 #********************************************************
@@ -139,11 +142,9 @@ iquery -af /home/scidb/createArray.afl
 echo "***** ***** Loading data to arrays..."
 #********************************************************
 python /home/scidb/modis2scidb/checkFolder.py --log DEBUG /home/scidb/data/toLoad/ /home/scidb/modis2scidb/ MOD13Q1 MOD13Q1 &
-#ONLY SAO PAULO state data h13v11
+# MODIS tile h13v11
 #find /home/scidb/modis/MOD13Q1 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-
 find e4ftl01.cr.usgs.gov/MOLT/MOD13Q1.005 -type f -name '*h13v11*.hdf' -print | parallel -j 4 --no-notice --xapply python /home/scidb/modis2scidb/hdf2sdbbin.py --log DEBUG {} /home/scidb/data/toLoad/ MOD13Q1
-
 #********************************************************
 echo "***** ***** Waiting to finish uploading files to SciDB..."
 #********************************************************
@@ -160,8 +161,13 @@ echo "***** ***** Removing array versions..."
 #********************************************************
 echo "***** ***** Executing TW-DTW..."
 #********************************************************
-#extract patterns - where?????????
-tar -xzf temporal-patterns.tar.gz
+mv /home/scidb/temporal-patterns.tar.gz /home/scidb/temporal-patterns
+
+
+Rscript /home/scidb/EMBRAPA.R
+Rscript config.R
+
+
 
 
 rm /home/scidb/pass.txt
